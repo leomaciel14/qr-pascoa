@@ -1,5 +1,6 @@
 import admin from "firebase-admin";
 import { readFileSync } from "fs";
+import { nanoid } from "nanoid";
 
 // 🔐 serviceAccount.json (NUNCA subir isso pro git)
 const serviceAccount = JSON.parse(
@@ -24,18 +25,23 @@ async function seed() {
   const batch = db.batch();
 
   for (let i = 0; i < 300; i++) {
-    const ref = db.collection("qrs").doc(String(i));
+    const token = nanoid(16); // 🔐 token aleatório forte
+
+    const ref = db.collection("qrs").doc(token);
+    // 👆 docId já é o token (lookup rápido e seguro)
 
     batch.set(ref, {
       id: i,
+      token,
       base: getBaseById(i),
       used: false,
       usedAt: null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   }
 
   await batch.commit();
-  console.log("✅ 300 QR Codes criados com sucesso");
+  console.log("✅ 300 QR Codes criados com token seguro");
 }
 
 seed().catch(console.error);

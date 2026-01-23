@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 
+type Base = "POA" | "CANOAS" | "SL";
+
 export async function GET() {
   const snap = await db.collection("qrs").get();
 
@@ -12,9 +14,9 @@ export async function GET() {
     SL: { total: 0, used: 0, free: 0 },
   };
 
-
   qrs.forEach((qr: any) => {
-    const base = qr.base;
+    const base = qr.base as Base;
+
     byBase[base].total++;
     qr.used ? byBase[base].used++ : byBase[base].free++;
   });

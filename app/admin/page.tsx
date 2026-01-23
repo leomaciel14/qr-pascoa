@@ -20,9 +20,15 @@ type ApiData = {
   qrs: QR[];
 };
 
+type SortKey = "id" | "base" | "used" | "usedAt";
+type SortOrder = "asc" | "desc";
+
 export default function AdminPage() {
   const [data, setData] = useState<ApiData | null>(null);
   const [base, setBase] = useState<"ALL" | Base>("ALL");
+
+  const [sortKey, setSortKey] = useState<SortKey>("id");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   useEffect(() => {
     fetch("/api/admin/qrs")
@@ -30,12 +36,37 @@ export default function AdminPage() {
       .then(setData);
   }, []);
 
+  function handleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortOrder(prev => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortOrder("asc");
+    }
+  }
+
   const filteredQrs = useMemo(() => {
     if (!data) return [];
-    return base === "ALL"
-      ? data.qrs
-      : data.qrs.filter(qr => qr.base === base);
-  }, [data, base]);
+
+    let list =
+      base === "ALL"
+        ? [...data.qrs]
+        : data.qrs.filter(qr => qr.base === base);
+
+    list.sort((a, b) => {
+      const aValue = a[sortKey];
+      const bValue = b[sortKey];
+
+      if (aValue === null) return 1;
+      if (bValue === null) return -1;
+
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return list;
+  }, [data, base, sortKey, sortOrder]);
 
   if (!data) {
     return <p className="p-8">Carregando dashboard...</p>;
@@ -52,13 +83,13 @@ export default function AdminPage() {
         <div className="flex items-center gap-4">
           <Image
             src="/logo-sebratel.png"
-            width={250}
+            width={220}
             height={40}
             priority
             alt="Sebratel"
           />
-
         </div>
+
         <h1 className="text-3xl font-bold">Dashboard — QR Codes</h1>
 
         <select
@@ -66,10 +97,10 @@ export default function AdminPage() {
           onChange={e => setBase(e.target.value as any)}
           className="border rounded px-3 py-2"
         >
-          <option className="text-black" value="ALL">Todas as bases</option>
-          <option className="text-black" value="POA">Porto Alegre</option>
-          <option className="text-black" value="CANOAS">Canoas</option>
-          <option className="text-black" value="SL">São Leopoldo</option>
+          <option value="ALL">Todas as bases</option>
+          <option value="POA">Porto Alegre</option>
+          <option value="CANOAS">Canoas</option>
+          <option value="SL">São Leopoldo</option>
         </select>
       </header>
 
@@ -81,19 +112,52 @@ export default function AdminPage() {
       </div>
 
       {/* Tabela */}
-      <div className="overflow-auto rounded border">
+      <div className="overflow-auto rounded border bg-white">
         <table className="w-full border-collapse">
           <thead className="bg-gray-100">
             <tr className="text-black">
-              <th className="p-2 text-left">ID</th>
-              <th className="p-2 text-left">Base</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Usado em</th>
+              <th className="p-2 text-left">
+                <SortHeader
+                  label="ID"
+                  column="id"
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="p-2 text-left">
+                <SortHeader
+                  label="Base"
+                  column="base"
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="p-2 text-left">
+                <SortHeader
+                  label="Status"
+                  column="used"
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="p-2 text-left">
+                <SortHeader
+                  label="Usado em"
+                  column="usedAt"
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={handleSort}
+                />
+              </th>
             </tr>
           </thead>
+
           <tbody>
             {filteredQrs.map(qr => (
-              <tr key={qr.id} className="border-t">
+              <tr key={qr.id} className="border-t hover:bg-gray-50">
                 <td className="p-2">{qr.id}</td>
                 <td className="p-2">{qr.base}</td>
                 <td className="p-2">
@@ -110,6 +174,34 @@ export default function AdminPage() {
         </table>
       </div>
     </main>
+  );
+}
+
+/* ================= COMPONENTS ================= */
+
+function SortHeader({
+  label,
+  column,
+  sortKey,
+  sortOrder,
+  onSort,
+}: {
+  label: string;
+  column: SortKey;
+  sortKey: SortKey;
+  sortOrder: SortOrder;
+  onSort: (key: SortKey) => void;
+}) {
+  const active = sortKey === column;
+
+  return (
+    <button
+      onClick={() => onSort(column)}
+      className="flex items-center gap-1 font-semibold hover:underline"
+    >
+      {label}
+      {active && (sortOrder === "asc" ? "⬆️" : "⬇️")}
+    </button>
   );
 }
 

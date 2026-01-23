@@ -155,7 +155,7 @@ export default function AdminPage() {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="text-black">
             {filteredQrs.map(qr => (
               <tr key={qr.id} className="border-t hover:bg-gray-50">
                 <td className="p-2">{qr.id}</td>

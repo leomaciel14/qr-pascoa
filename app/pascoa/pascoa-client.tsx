@@ -32,9 +32,11 @@ export default function PascoaClient() {
   }
 
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold">🐰 Feliz Páscoa!</h1>
-      <p>QR válido! Aproveite 🎉</p>
+    <main className="min-h-screen flex items-center justify-center p-8 bg-yellow-300 text-black">
+      <div className="flex flex-col justify-center items-center bg-white p-8 rounded-xl">
+        <h1 className="text-3xl font-bold">🐰 Feliz Páscoa!</h1>
+        <p>QR válido! Aproveite 🎉</p>
+      </div>
     </main>
   );
 }

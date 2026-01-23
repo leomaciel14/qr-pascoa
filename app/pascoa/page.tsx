@@ -1,11 +1,12 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function PascoaPage() {
   const params = useSearchParams();
   const router = useRouter();
+  const [status, setStatus] = useState<"loading" | "ok">("loading");
 
   useEffect(() => {
     const id = params.get("id");
@@ -19,15 +20,21 @@ export default function PascoaPage() {
       .then(res => res.json())
       .then(data => {
         if (data.status === "USED") {
-          router.push("/ja-usado");
+          router.replace("/ja-usado");
+        } else if (data.status === "OK") {
+          setStatus("ok");
         }
       });
   }, []);
 
+  if (status === "loading") {
+    return <p>Validando QR...</p>;
+  }
+
   return (
     <main className="p-8">
       <h1 className="text-3xl font-bold">🐰 Feliz Páscoa!</h1>
-      <p>QR válido 🎉</p>
+      <p>QR válido! Aproveite 🎉</p>
     </main>
   );
 }

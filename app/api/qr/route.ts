@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
+import { useQr } from "@/lib/qrStore";
 
 export async function POST(req: Request) {
   const { id } = await req.json();
 
   if (!id) {
     return NextResponse.json(
-      { error: "ID inválido" },
+      { status: "INVALID" },
       { status: 400 }
     );
   }
 
-  // mock temporário
-  if (id === "QR007") {
-    return NextResponse.json({ status: "USED" });
-  }
+  const result = useQr(id);
 
-  return NextResponse.json({ status: "OK" });
+  return NextResponse.json(result);
 }

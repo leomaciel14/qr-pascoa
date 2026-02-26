@@ -87,7 +87,7 @@ export default function PascoaSuccess({
 
       <video
         ref={videoRef}
-        src="/video/pascoa.webp"
+        src="/video/pascoa.webm"
         autoPlay
         muted
         playsInline

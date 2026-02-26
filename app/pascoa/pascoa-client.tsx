@@ -8,8 +8,6 @@ export default function PascoaClient() {
   const params = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "ok">("loading");
-  
-  // Estado para guardar os dados reais do QR Code
   const [qrData, setQrData] = useState<{ qrId?: number; base?: string }>({});
 
   useEffect(() => {
@@ -28,14 +26,9 @@ export default function PascoaClient() {
       .then(res => res.json())
       .then(data => {
         if (data.status === "OK") {
-          // Guardamos os dados que vieram da API (Firestore)
-          setQrData({
-            qrId: data.qrId,
-            base: data.base
-          });
+          setQrData({ qrId: data.qrId, base: data.base });
           setStatus("ok");
         } else {
-          // Se for USED ou qualquer erro, manda para a página de erro
           router.replace("/ja-usado");
         }
       })
@@ -44,15 +37,9 @@ export default function PascoaClient() {
       });
   }, [params, router]);
 
-  if (status === "loading") {
-    // Aqui você pode até colocar um background escuro para não dar "flash" branco
-    return (
-      <main className="h-[100dvh] w-full bg-black flex items-center justify-center">
-        <p className="text-white font-mono animate-pulse">Validando QR...</p>
-      </main>
-    );
-  }
+  // Se ainda estiver carregando, retornamos null. 
+  // Isso permite que o Suspense (no page.tsx) mostre a LoadingScreen oficial.
+  if (status === "loading") return null;
 
-  // Passamos os dados REAIS para o componente visual
   return <PascoaSuccess qrId={qrData.qrId} base={qrData.base} preview={false} />;
 }

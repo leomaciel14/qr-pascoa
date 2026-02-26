@@ -21,17 +21,27 @@ export default function PascoaSuccess({
 
     video.playbackRate = 1.5;
 
+    const attemptPlay = () => {
+      video.play().catch(err => console.log("Erro ao dar play:", err));
+    };
+    attemptPlay();
+
     const handleTimeUpdate = () => {
       if (video.currentTime >= 5.90 && !showContent) {
         setShowContent(true);
       }
     };
 
-    // Quando o vídeo termina, pausa no último frame
     const handleEnded = () => {
       video.pause();
       video.currentTime = video.duration - 0.1;
     };
+
+    const safetyTimer = setTimeout(() => {
+      if (!showContent) {
+        setShowContent(true);
+      }
+    }, 6000);
 
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
@@ -39,6 +49,7 @@ export default function PascoaSuccess({
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("ended", handleEnded);
+      clearTimeout(safetyTimer); // Limpa o timer se o componente desmontar
     };
   }, [showContent]);
 

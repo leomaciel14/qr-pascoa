@@ -16,15 +16,15 @@ const db = admin.firestore();
 type Base = "POA" | "CANOAS" | "SL";
 
 function getBaseById(id: number): Base {
-  if (id < 100) return "POA";
-  if (id < 200) return "CANOAS";
+  if (id < 50) return "POA";
+  if (id < 100) return "CANOAS";
   return "SL";
 }
 
 async function seed() {
   const batch = db.batch();
 
-  for (let i = 0; i < 300; i++) {
+  for (let i = 0; i < 150; i++) {
     const token = nanoid(16); // 🔐 token aleatório forte
 
     const ref = db.collection("qrs").doc(token);

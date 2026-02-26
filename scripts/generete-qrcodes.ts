@@ -27,7 +27,7 @@ async function generatePNGs() {
     const token = doc.id;
 
     const url = `https://qr-pascoa.vercel.app/pascoa?t=${token}`;
-    const fileName = `qr_${data.id}_${data.base}.png`;
+    const fileName = `qr_${data.id}_${data.base}_${token.slice(0,6)}.png`;
 
     await QRCode.toFile(
       path.join(OUTPUT_DIR, fileName),

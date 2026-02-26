@@ -14,15 +14,18 @@ const db = admin.firestore();
 async function exportQrs() {
   const snap = await db.collection("qrs").get();
 
-  let csv = "id,base,token,url\n";
+  let csv = "id,base,token,url,@image\n";
 
   snap.docs.forEach(doc => {
     const data = doc.data();
     const token = doc.id;
 
-    const url = `https://qr-pascoa.vercel.app/pascoa?t=${token}`;
+    const shortToken = token.slice(0, 6);
 
-    csv += `${data.id},${data.base},${token},${url}\n`;
+    const url = `https://qr-pascoa.vercel.app/pascoa?t=${token}`;
+    const imagePath = `C:\\Users\\leonardo.maciel\\Desktop\\Pascoa\\qr-pascoa\\qrcodes\\png\\qr_${data.id}_${data.base}_${shortToken}.png`;
+
+    csv += `${data.id},${data.base},${token},${url},${imagePath}\n`;
   });
 
   writeFileSync("qrs.csv", csv, "utf8");

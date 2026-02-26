@@ -61,7 +61,7 @@ export default function PascoaSuccess({
       width: '100vw',
       height: '100dvh',
       overflow: 'hidden',
-      backgroundColor: '#000'
+      backgroundColor: '#f7df41'
     }}>
 
       <div style={{

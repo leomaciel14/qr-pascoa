@@ -137,7 +137,7 @@ export default function PascoaSuccess({
               </h2>
 
               <p className="mt-4 leading-relaxed font-medium text-lg">
-                Você desbloqueou um Ovo de Páscoa e ele será doado à uma instituição. 🍫
+                Você desbloqueou um Ovo de Páscoa e ele será doado à uma instituição de caridade. 🍫
               </p>
 
               <div className="mt-8 flex gap-4 text-xs font-mono text-amber-800/70">
